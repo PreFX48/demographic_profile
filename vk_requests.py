@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 def scanCommunity (communityId, number):
     VK_API = 'http://api.vk.com/method/'
     posts = []
@@ -29,7 +30,7 @@ def scanCommunity (communityId, number):
     for comment in comments:
         if comment[0] not in authors:
             authorInfo = requests.get(VK_API+'users.get',
-                   {'user_ids':comment[0], 'fields': 'city,country,personal,relation'}).json()['response']
+                   {'user_ids':comment[0], 'fields': 'city,country,bdate,personal,relation'}).json()['response']
             authorInfo[0]['user_comments'] = [comment[1]]
             authors[comment[0]] = authorInfo[0]
             #TODO: Добавить нормальный учёт высшего образования
@@ -40,5 +41,5 @@ def scanCommunity (communityId, number):
     with open('data.json', 'w') as fp:
         json.dump(list(authors.values()), fp)
 
-
-scanCommunity(29534144, 3)
+# id сообщества Лентач - 29534144 (для дальнейшего использования)
+# scanCommunity(29534144, 2)
