@@ -27,19 +27,25 @@ def scanCommunity (communityId, number):
             count += len(commentsResponse) - 1
 
     authors = {}
+    commentNumber = 1
     for comment in comments:
+        if commentNumber % 25 == 0:
+            print('Comment #' + str(commentNumber), 'out of', len(comments))
         if comment[0] not in authors:
             authorInfo = requests.get(VK_API+'users.get',
                    {'user_ids':comment[0], 'fields': 'bdate'}).json()['response']
-            authorInfo[0]['user_comments'] = [comment[1]]
-            authors[comment[0]] = authorInfo[0]
-            #TODO: Добавить нормальный учёт высшего образования
+            if len(authorInfo) != 0:
+                if 'bdate' in authorInfo[0]:
+                    if authorInfo[0]['bdate'].find('.', authorInfo[0]['bdate'].find('.') + 1) != -1:
+                        authorInfo[0]['user_comments'] = [comment[1]]
+                        authors[comment[0]] = authorInfo[0]
         else:
             authors[comment[0]]['user_comments'].append(comment[1])
+        commentNumber += 1
 
 
     with open('data.json', 'w') as fp:
         json.dump(list(authors.values()), fp)
 
 # id сообщества Лентач - 29534144 (для дальнейшего использования)
-# scanCommunity(29534144, 2)
+# scanCommunity(29534144, 50)
