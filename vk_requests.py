@@ -30,7 +30,7 @@ def scanCommunity (communityId, number):
     for comment in comments:
         if comment[0] not in authors:
             authorInfo = requests.get(VK_API+'users.get',
-                   {'user_ids':comment[0], 'fields': 'city,country,bdate,personal,relation'}).json()['response']
+                   {'user_ids':comment[0], 'fields': 'bdate'}).json()['response']
             authorInfo[0]['user_comments'] = [comment[1]]
             authors[comment[0]] = authorInfo[0]
             #TODO: Добавить нормальный учёт высшего образования
