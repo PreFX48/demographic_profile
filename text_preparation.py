@@ -1,7 +1,9 @@
 import re
 from nltk.stem.snowball import SnowballStemmer
+from nltk.corpus import stopwords
 
 def tokenize (text):
+    #TODO: нужны ли числа? возможно, стоит удалить
     words = re.finditer(r'(-?[\d]+([\.,][\d]+)?)|([A-Za-z]+(-[A-Za-z]+)*)|([А-Яа-я]+(-[А-Яа-я]+)*)', text)
     return map(lambda word: word.span(), words)
 
@@ -16,10 +18,10 @@ def prepareText(text):
     # Удаляем обращения
     text = re.sub(r'\[id[1-9][\d]*\|(([A-Za-z]+(-[A-Za-z]+)*)|([А-Яа-я]+(-[А-Яа-я]+)*))\],', '', text)
 
-    stemmer = SnowballStemmer('russian')
-
     words = tokenize(text)
 
-    # TODO: пробежаться и удалить стоп-слова?
+    words = [word for word in words if text[word[0]:word[1]] not in stopwords.words('russian')]
+
+    stemmer = SnowballStemmer('russian')
     stemmedWords = [stemmer.stem(text[word[0]:word[1]]) for word in words]
     return stemmedWords
