@@ -10,8 +10,8 @@ def tokenize (text):
 
 # TODO: поискать лемматизаторы (pymorphy?)
 def prepareText(text):
-    # Удаляем html-теги (он тут вроде бы только один)
-    text = re.sub('<br>', ' ', text)
+    # Удаляем html-теги
+    text = re.sub('(<br>)|(\&gt;)|(\&lt;)', ' ', text)
     # Удаляем URL-ы. Спасибо Imme Emosol (https://gist.github.com/imme-emosol/731338)
     text = re.sub(r'(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:/[^\s]*)?',
            '', text)
