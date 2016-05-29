@@ -54,4 +54,4 @@ def scanCommunity (communityId, number):
     with open('data.json', 'w') as fp:
         json.dump(list(authors.values()), fp)
 
-scanCommunity(15755094, 20) #РИА Новости
+scanCommunity(25557243, 20) #BadComedian

@@ -11,7 +11,7 @@ import scipy.sparse
 class CustomClassifier:
     def __init__(self):
         self.stop_words = list(set(stopwords.words('russian')).union(set(stopwords.words('english'))))
-        self.vectorizer = CountVectorizer(ngram_range=(1, 3), max_df=0.75)
+        self.vectorizer = CountVectorizer(max_df=0.75)
         self.transformer = TfidfTransformer()
         self.scaler = MaxAbsScaler()
         self.classifier = LogisticRegression()
@@ -76,26 +76,31 @@ class CustomClassifier:
 
     def fit(self, raw_comments, age_categories):
         comments = list(map(self.prepareText, raw_comments))
+        #признак - количество слов в комментарии
         word_numbers = list(map(len, comments))
         word_numbers_array = numpy.empty((len(word_numbers), 1))
         for i in enumerate(word_numbers):
             word_numbers_array[i[0]][0] = i[1]
         word_numbers_array = scipy.sparse.csr_matrix(word_numbers_array)
+        #признак - частота знаков препинания в комментарии
         punctuation = list(map(self.punctuationDensity, raw_comments))
         punctuation_array = numpy.empty((len(punctuation), 1))
         for i in enumerate(punctuation):
             punctuation_array[i[0]][0] = i[1]
         punctuation_array = scipy.sparse.csr_matrix(punctuation_array)
+        #признак - частота употребления мата в комментарии
         swearings = list(map(self.swearingsDensity, raw_comments))
         swearings_array = numpy.empty((len(swearings), 1))
         for i in enumerate(swearings):
             swearings_array[i[0]][0] = i[1]
         swearings_array = scipy.sparse.csr_matrix(swearings_array)
+        #признак - средняя длина слова
         word_lengths = list(map(self.averageWordLength, raw_comments))
         word_lengths_array = numpy.empty((len(word_lengths), 1))
         for i in enumerate(word_lengths):
             word_lengths_array[i[0]][0] = i[1]
         word_lengths_array = scipy.sparse.csr_matrix(word_lengths_array)
+        #TF-IDF модель
         word_counts = self.vectorizer.fit_transform(list(map(' '.join, comments)))
         weighted_counts = self.transformer.fit_transform(word_counts)
         final_feature_matrix = scipy.sparse.hstack([weighted_counts, word_numbers_array, punctuation_array, swearings_array, word_lengths_array])
@@ -106,18 +111,23 @@ class CustomClassifier:
         result = []
         for comment in raw_comments:
             features = self.transformer.transform(self.vectorizer.transform([' '.join(self.prepareText(comment))]))
+            #
             words_number = numpy.empty((1, 1))
             words_number[0][0] = len(self.prepareText(comment))
             words_number = scipy.sparse.csr_matrix(words_number)
+            #
             text_punctuation = numpy.empty((1, 1))
             text_punctuation[0][0] = self.punctuationDensity(comment)
             text_punctuation = scipy.sparse.csr_matrix(text_punctuation)
+            #
             text_swearings = numpy.empty((1, 1))
             text_swearings[0][0] = self.swearingsDensity(comment)
             text_swearings = scipy.sparse.csr_matrix(text_swearings)
+            #
             word_length = numpy.empty((1, 1))
             word_length[0][0] = self.averageWordLength(comment)
             word_length = scipy.sparse.csr_matrix(word_length)
+            #
             features = scipy.sparse.hstack((features, words_number, text_punctuation, text_swearings, word_length))
             features = self.scaler.transform(features)
             result.append(self.classifier.predict(features)[0])

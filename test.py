@@ -4,6 +4,7 @@ import numpy
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn import cross_validation
 
+
 def getAgeCategory(birth_year):
     CURRENT_YEAR = 2016
     age = CURRENT_YEAR - birth_year
@@ -30,7 +31,6 @@ def testSamples(json_file_path, nfolds):
             raw_comments.append(comment)
             bdates.append(person['bdate'])
     age_categories = list(map(getAgeCategory, bdates))
-
     raw_comments = numpy.array(raw_comments)
     age_categories = numpy.array(age_categories)
     kfold = cross_validation.KFold(len(raw_comments), n_folds=nfolds, shuffle=True)
