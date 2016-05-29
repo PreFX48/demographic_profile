@@ -33,13 +33,17 @@ def scanCommunity (communityId, number):
             print('Comment #' + str(commentNumber), 'out of', len(comments))
         if comment[0] not in authors:
             authorInfo = requests.get(VK_API+'users.get',
-                   {'user_ids':comment[0], 'fields': 'bdate'}).json()['response']
+                   {'user_ids':comment[0], 'fields': 'bdate,sex'}).json()['response']
             if len(authorInfo) != 0:
-                if 'bdate' in authorInfo[0]:
+                if 'bdate' in authorInfo[0] and 'sex' in authorInfo[0]:
                     yearIndex = authorInfo[0]['bdate'].find('.', authorInfo[0]['bdate'].find('.') + 1)
-                    if yearIndex != -1:
+                    if yearIndex != -1 and 1 <= authorInfo[0]['sex'] <= 2:
                         authorInfo[0]['user_comments'] = [comment[1]]
                         authorInfo[0]['bdate'] = int(authorInfo[0]['bdate'][yearIndex+1:])
+                        if authorInfo[0]['sex'] == 1:
+                            authorInfo[0]['sex'] = 'female'
+                        else:
+                            authorInfo[0]['sex'] = 'male'
                         authors[comment[0]] = authorInfo[0]
         else:
             authors[comment[0]]['user_comments'].append(comment[1])
@@ -50,5 +54,4 @@ def scanCommunity (communityId, number):
     with open('data.json', 'w') as fp:
         json.dump(list(authors.values()), fp)
 
-# id сообщества Лентач - 29534144 (для дальнейшего использования)
-scanCommunity(25557243, 100)
+scanCommunity(15755094, 20) #РИА Новости

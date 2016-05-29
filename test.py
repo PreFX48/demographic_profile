@@ -25,11 +25,7 @@ def testSamples(json_file_path, nfolds):
     bdates = []
     with open(json_file_path, 'r') as fp:
         json_data = json.load(fp)
-    people_number = 0
     for person in json_data:
-        if people_number >= 1000:
-            break
-        people_number += 1
         for comment in person['user_comments']:
             raw_comments.append(comment)
             bdates.append(person['bdate'])
@@ -56,7 +52,6 @@ def testSamples(json_file_path, nfolds):
 
 import timeit
 start = timeit.default_timer()
-totalAccuracy = 0
-testSamples('data.json', 5)
+testSamples('data.json', 6)
 stop = timeit.default_timer()
 print("TIME:", round(stop - start, 1), 'secs')
